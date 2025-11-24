@@ -1,0 +1,65 @@
+services:
+  backend_db:
+    container_name: backend_db
+    image: postgres:latest
+    hostname: postgres-host
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=whatsapp_sticket_manager
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d whatsapp_sticket_manager"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    hostname: minio-host
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      start_period: 5s
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - minio_data:/minio_data
+    command: server /minio_data --console-address ":9001"
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      backend_db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      - DB_HOST=backend_db
+
+volumes:
+  pgdata:
+  minio_data:
