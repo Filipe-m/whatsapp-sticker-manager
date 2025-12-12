@@ -1,7 +1,7 @@
 import { authMiddleware } from '@middlewares/auth'
-import { PackService } from '@modules/pack/service'
+import { PackService } from '@modules/packs/pack.service'
 import { Elysia, t } from 'elysia'
-import { stickerSchema } from './model'
+import { stickerSchema } from './sticket.schema'
 
 export const sticker = new Elysia({
     prefix: '/sticker',
@@ -32,7 +32,8 @@ export const sticker = new Elysia({
                 description: 'Create a new sticker inside a pack',
             },
             body: t.Object({
-                packId: t.Number({
+                packId: t.String({
+                    format: 'uuid',
                     title: 'Id of the pack with this sticker is in',
                 }),
                 file: t.File({

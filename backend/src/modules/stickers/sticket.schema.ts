@@ -3,7 +3,8 @@ import { createSelectSchema } from 'drizzle-typebox'
 import { t } from 'elysia'
 
 export const stickerSchema = createSelectSchema(stickers, {
-    id: t.Number({
+    id: t.String({
+        format: 'uuid',
         description: 'Unique identifier for the sticker',
         examples: [1],
     }),
@@ -12,6 +13,7 @@ export const stickerSchema = createSelectSchema(stickers, {
         examples: ['Cool Sticker'],
     }),
     packId: t.String({
+        format: 'uuid',
         description: 'ID of the pack this sticker belongs to',
         examples: ['pack_12345'],
     }),

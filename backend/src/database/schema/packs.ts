@@ -1,12 +1,14 @@
 import { relations } from 'drizzle-orm'
-import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { sharedPacks } from './sharedPacks'
 import { users } from './users'
 
 export const packs = pgTable('packs', {
-    id: serial('id').primaryKey(),
+    id: uuid('id')
+        .primaryKey()
+        .$defaultFn(() => Bun.randomUUIDv7()),
     name: text('name').notNull(),
-    owner: text('owner')
+    owner: uuid('owner')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     public: boolean().default(false).notNull(),

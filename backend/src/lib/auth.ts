@@ -28,5 +28,8 @@ export const auth = betterAuth({
     },
     advanced: {
         disableOriginCheck: true,
+        database: {
+            generateId: () => Bun.randomUUIDv7(),
+        },
     },
 })

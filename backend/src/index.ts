@@ -5,18 +5,18 @@ import { auth } from '@lib/auth'
 import { Enviroments } from '@lib/enviroments'
 import { logger } from '@lib/logger'
 import { authMiddleware } from '@middlewares/auth'
-import { errorMiddleware } from '@middlewares/error'
-import { pack } from '@modules/pack/controller'
-import { sticker } from '@modules/sticker/controller'
+import { pack } from '@modules/packs/pack.controller'
+import { sticker } from '@modules/stickers/sticker.controller'
 import { openApiConfig } from '@utils/openApi'
 import { Elysia } from 'elysia'
+import { NotFoundException } from './exceptions/notFound'
 
 new Elysia({
     allowUnsafeValidationDetails: true,
 })
     .use(cors())
     .decorate('logger', logger)
-    .use(errorMiddleware)
+    .error({ NotFoundException })
     .get('/health', () => 'Sucess')
     .mount(auth.handler)
     .use(authMiddleware)

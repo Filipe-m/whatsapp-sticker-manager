@@ -1,5 +1,5 @@
 {
-  "id": "31a26c4d-f17b-41fe-a9c3-957297e8c685",
+  "id": "b40b30bb-5892-4640-b175-7688cfbf3413",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -28,7 +28,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -116,7 +116,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -128,7 +128,7 @@
         },
         "owner": {
           "name": "owner",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -182,7 +182,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -225,7 +225,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
@@ -266,19 +266,19 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
-          "primaryKey": false,
+          "type": "uuid",
+          "primaryKey": true,
           "notNull": true
         },
         "packId": {
           "name": "packId",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
         "userId": {
           "name": "userId",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -368,7 +368,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -378,9 +378,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "pack_id": {
-          "name": "pack_id",
-          "type": "integer",
+        "packId": {
+          "name": "packId",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -401,12 +401,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "stickers_pack_id_packs_id_fk": {
-          "name": "stickers_pack_id_packs_id_fk",
+        "stickers_packId_packs_id_fk": {
+          "name": "stickers_packId_packs_id_fk",
           "tableFrom": "stickers",
           "tableTo": "packs",
           "columnsFrom": [
-            "pack_id"
+            "packId"
           ],
           "columnsTo": [
             "id"
@@ -427,7 +427,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -493,7 +493,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
