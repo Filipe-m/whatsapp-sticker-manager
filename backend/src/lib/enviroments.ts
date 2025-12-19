@@ -26,6 +26,8 @@ const envSchema = z.object({
     MINIO_PASSWORD: z.string().default('minioadmin'),
     BUCKET_NAME: z.string().default('ws-stickers'),
 
+    STORAGE_PROVIDER: z.enum(['minio']).default('minio'),
+
     AUTH_SECRET: z.string().default('O3mEiUlhjSYsyxYqqcTsdaZlIDXP6Gzd'),
 })
 
