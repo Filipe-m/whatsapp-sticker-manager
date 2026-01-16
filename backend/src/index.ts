@@ -10,6 +10,7 @@ import { sticker } from '@modules/stickers/sticker.controller'
 import { openApiConfig } from '@utils/openApi'
 import { Elysia } from 'elysia'
 import { NotFoundException } from './exceptions/notFound'
+import { user } from '@modules/users/user.controller'
 
 new Elysia({
     allowUnsafeValidationDetails: true,
@@ -22,6 +23,7 @@ new Elysia({
     .use(authMiddleware)
     .use(pack)
     .use(sticker)
+    .use(user)
     .use(openapi(openApiConfig))
     .listen(Enviroments.PORT, () =>
         logger.info(

@@ -2,7 +2,7 @@ import { ForbiddenException } from '@/exceptions/forbidden'
 import { NotFoundException } from '@/exceptions/notFound'
 import { db } from '@database/index'
 import { packs, type NewPack, type Packs } from '@database/schema/packs'
-import { sharedPacks } from '@database/schema/sharedPacks'
+import { sharedPacks, type NewSharedPack } from '@database/schema/sharedPacks'
 import { and, count, eq, inArray, or, type SQL } from 'drizzle-orm'
 import type { GetPacksResponse } from './pack.schema'
 
@@ -172,5 +172,38 @@ export class PackService {
         if (!deletedPack) {
             throw new NotFoundException(`Pack with id ${id} not found`)
         }
+    }
+
+    static async sharePack(
+        packId: string,
+        userId: string,
+        permissions: {
+            canEdit: boolean
+            canDelete: boolean
+        }
+    ): Promise<NewSharedPack> {
+        const sharedPack = await db
+            .insert(sharedPacks)
+            .values({
+                packId,
+                userId,
+                canEdit: permissions.canEdit,
+                canDelete: permissions.canDelete,
+            })
+            .onConflictDoUpdate({
+                target: [sharedPacks.packId, sharedPacks.userId],
+                set: {
+                    canEdit: permissions.canEdit,
+                    canDelete: permissions.canDelete,
+                    updatedAt: new Date(),
+                },
+            })
+            .returning()
+
+        if (!sharedPack || sharedPack.length === 0) {
+            throw new Error('Failed to share pack')
+        }
+
+        return sharedPack[0]
     }
 }
