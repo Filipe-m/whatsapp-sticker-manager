@@ -154,6 +154,36 @@ export const getPacksResponseSchema = t.Object(
     }
 )
 
+export const sharePackBodySchema = t.Object(
+    {
+        userId: t.String({
+            format: 'uuid',
+            description: 'ID of the user to share the pack with',
+            title: 'User ID',
+        }),
+        canEdit: t.Boolean({
+            description: 'Allow the user to edit the pack',
+            default: false,
+            examples: [true, false],
+        }),
+        canDelete: t.Boolean({
+            description: 'Allow the user to delete the pack',
+            default: false,
+            examples: [true, false],
+        }),
+    },
+    {
+        description: 'Schema for sharing a pack with another user',
+        examples: [
+            {
+                userId: 'user-123',
+                canEdit: true,
+                canDelete: false,
+            },
+        ],
+    }
+)
+
 export type Pack = typeof packSchema.static
 export type GetPacksQuery = typeof getPacksQuerySchema.static
 export type GetPacksResponse = typeof getPacksResponseSchema.static
@@ -161,3 +191,4 @@ export type CreatePackBody = typeof createPackBodySchema.static
 export type UpdatePackBody = typeof updatePackBodySchema.static
 export type PackIdParam = typeof packIdParamSchema.static
 export type PaginationMeta = typeof paginationMetaSchema.static
+export type SharePackBody = typeof sharePackBodySchema.static
