@@ -1,0 +1,37 @@
+<div class="page">
+  <div class="card">
+    <div class="header">
+      <div class="title">WhatsApp Stickers</div>
+      <div class="subtitle">Login</div>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="entrar()">
+      <label class="label" for="user">Usuário</label>
+      <input id="user" class="input" type="text" formControlName="user" autocomplete="username" />
+
+      <label class="label" for="password">Senha</label>
+      <div class="password-row">
+        <input
+          id="password"
+          class="input"
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <button type="button" class="ghost" (click)="togglePassword()">
+          {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+
+      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+      <button class="btn primary" type="submit" [disabled]="loading">
+        {{ loading ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      <button class="btn secondary" type="button" (click)="criarConta()" [disabled]="loading">
+        {{ loading ? 'Aguarde...' : 'Criar Conta' }}
+      </button>
+    </form>
+  </div>
+</div>

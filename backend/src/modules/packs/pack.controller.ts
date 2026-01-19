@@ -3,13 +3,14 @@ import { NotFoundException } from '@/exceptions/notFound'
 import { authMiddleware } from '@middlewares/auth'
 import HttpStatusCode from '@utils/httpStatusCode'
 import { emptySchema } from '@utils/schema'
-import { Elysia, status } from 'elysia'
+import { Elysia, status, t } from 'elysia'
 import {
     createPackBodySchema,
     getPacksQuerySchema,
     getPacksResponseSchema,
     packIdParamSchema,
     packSchema,
+    sharePackBodySchema,
     updatePackBodySchema,
 } from './pack.schema'
 import { PackService } from './pack.service'
@@ -138,6 +139,38 @@ export const pack = new Elysia({
             params: packIdParamSchema,
             response: {
                 204: emptySchema,
+                403: ForbiddenException.schema,
+                404: NotFoundException.schema,
+            },
+        }
+    )
+    .post(
+        ':id/share',
+        async ({ user, params, body }) => {
+            await PackService.assertUserHasPermission(user.id, params.id, [
+                'edit',
+            ])
+            const sharedPack = await PackService.sharePack(
+                params.id,
+                body.userId,
+                {
+                    canEdit: body.canEdit,
+                    canDelete: body.canDelete,
+                }
+            )
+            return status(201, sharedPack)
+        },
+        {
+            auth: true,
+            detail: {
+                summary: 'Share a pack with a user',
+                description:
+                    'Share a pack with another user and set their permissions (edit, delete)',
+            },
+            params: packIdParamSchema,
+            body: sharePackBodySchema,
+            response: {
+                201: t.Any(),
                 403: ForbiddenException.schema,
                 404: NotFoundException.schema,
             },
