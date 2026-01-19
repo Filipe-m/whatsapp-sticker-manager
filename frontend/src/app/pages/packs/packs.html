@@ -1,0 +1,131 @@
+<div class="page">
+  <div class="card">
+    <div class="topbar">
+      <div>
+        <div class="title">Packs de Stickers</div>
+        <div class="subtitle">Crie, publique e remova packs</div>
+      </div>
+
+      <button class="btn secondary" type="button" (click)="sair()" [disabled]="loading">
+        Sair
+      </button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Criar pack</div>
+
+      <form class="create" [formGroup]="createForm" (ngSubmit)="criarPack()">
+        <input class="input" placeholder="Nome do pack" formControlName="name" />
+        <label class="toggle">
+          <input type="checkbox" formControlName="public" />
+          <span>Público</span>
+        </label>
+        <button class="btn primary" type="submit" [disabled]="loading">
+          {{ loading ? 'Criando...' : 'Criar' }}
+        </button>
+      </form>
+
+      <div
+        class="hint"
+        *ngIf="
+          createForm.controls['name'].touched && createForm.controls['name'].hasError('required')
+        "
+      >
+        Informe um nome.
+      </div>
+      <div
+        class="hint"
+        *ngIf="
+          createForm.controls['name'].touched && createForm.controls['name'].hasError('maxlength')
+        "
+      >
+        Máximo 100 caracteres.
+      </div>
+    </div>
+
+    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <div class="section">
+      <div class="section-title">Packs existentes</div>
+
+      <div class="toolbar">
+        <div class="meta">
+          Página <b>{{ meta.page }}</b> de <b>{{ meta.totalPages }}</b> — Total:
+          <b>{{ meta.total }}</b>
+        </div>
+
+        <div class="right">
+          <span class="small">Itens:</span>
+          <button
+            class="chip"
+            type="button"
+            (click)="setPageSize(10)"
+            [disabled]="loading || meta.pageSize === 10"
+          >
+            10
+          </button>
+          <button
+            class="chip"
+            type="button"
+            (click)="setPageSize(25)"
+            [disabled]="loading || meta.pageSize === 25"
+          >
+            25
+          </button>
+          <button
+            class="chip"
+            type="button"
+            (click)="setPageSize(50)"
+            [disabled]="loading || meta.pageSize === 50"
+          >
+            50
+          </button>
+        </div>
+      </div>
+
+      <div class="loading" *ngIf="loading">Carregando...</div>
+
+      <div class="empty" *ngIf="!loading && packs.length === 0">Nenhum pack criado ainda.</div>
+
+      <div class="list" *ngIf="packs.length > 0">
+        <div class="row" *ngFor="let p of packs">
+          <div class="row-left">
+            <div class="pack-name">
+              {{ p.name }}
+              <span class="badge" [class.public]="p.public">{{
+                p.public ? 'Público' : 'Privado'
+              }}</span>
+            </div>
+            <div class="pack-meta">
+              Criado: {{ p.createdAt | date: 'short' }} • Atualizado:
+              {{ p.updatedAt | date: 'short' }}
+            </div>
+          </div>
+
+          <button class="btn danger" type="button" (click)="deletarPack(p)" [disabled]="loading">
+            Deletar
+          </button>
+        </div>
+      </div>
+
+      <div class="pager" *ngIf="meta.totalPages > 1">
+        <button
+          class="btn secondary"
+          type="button"
+          (click)="anterior()"
+          [disabled]="loading || meta.page <= 1"
+        >
+          Anterior
+        </button>
+        <button
+          class="btn secondary"
+          type="button"
+          (click)="proxima()"
+          [disabled]="loading || meta.page >= meta.totalPages"
+        >
+          Próxima
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -33,7 +33,12 @@ export class SignUpComponent {
   errorMsg = '';
   showPassword = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router, private cdr: ChangeDetectorRef) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.form = this.fb.group(
       {
         name: ['', [Validators.required, Validators.minLength(2)]],
@@ -42,7 +47,7 @@ export class SignUpComponent {
         confirmPassword: ['', [Validators.required]],
         rememberMe: [true],
       },
-      { validators: [passwordMatchValidator] }
+      { validators: [passwordMatchValidator] },
     );
   }
 
@@ -55,7 +60,7 @@ export class SignUpComponent {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      return
+      return;
       this.cdr.detectChanges();
     }
 
@@ -65,10 +70,10 @@ export class SignUpComponent {
     const rememberMe = Boolean(this.form.value.rememberMe);
 
     this.auth.signUpEmailFull({
-        name,
-        email,
-        password,
-        rememberMe,
+      name,
+      email,
+      password,
+      rememberMe,
     });
 
     this.loading = true;
@@ -98,7 +103,6 @@ export class SignUpComponent {
           this.errorMsg = err?.error?.message || 'Não foi possível criar a conta.';
           this.cdr.detectChanges();
           return;
-          
         },
       });
   }
