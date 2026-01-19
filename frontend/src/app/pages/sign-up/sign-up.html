@@ -49,7 +49,10 @@
           {{ showPassword ? 'Ocultar' : 'Mostrar' }}
         </button>
       </div>
-      <div class="hint" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
+      <div
+        class="hint"
+        *ngIf="form.controls['password'].touched && form.controls['password'].invalid"
+      >
         A senha deve ter pelo menos 8 caracteres.
       </div>
 
@@ -63,7 +66,10 @@
         autocomplete="new-password"
         placeholder="Repita a senha"
       />
-      <div class="hint" *ngIf="form.controls['confirmPassword'].touched && form.controls['confirmPassword'].invalid">
+      <div
+        class="hint"
+        *ngIf="form.controls['confirmPassword'].touched && form.controls['confirmPassword'].invalid"
+      >
         Confirme sua senha.
       </div>
       <div class="hint" *ngIf="form.touched && form.errors?.['passwordMismatch']">

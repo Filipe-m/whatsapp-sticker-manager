@@ -5,14 +5,17 @@ import { map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+  ) {}
 
   canActivate() {
     return this.auth.getSession().pipe(
       map((ok) => {
         if (!ok) this.router.navigateByUrl('/');
         return ok;
-      })
+      }),
     );
   }
 }

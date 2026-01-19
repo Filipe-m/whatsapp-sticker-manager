@@ -13,8 +13,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(
-      withFetch(),              // 👈 ADICIONE ISSO
-      withInterceptorsFromDi()
+      withFetch(),
+      withInterceptorsFromDi(),
     ),
     { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true },
   ],

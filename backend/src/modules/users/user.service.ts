@@ -1,9 +1,5 @@
 import { db } from '@database/index'
-import {
-    users,
-    type Users as UserRow,
-} from '@database/schema/users'
-import { logger } from '@lib/logger'
+import { users } from '@database/schema/users'
 import { count } from 'drizzle-orm'
 
 export interface GetUsersInput {
@@ -12,9 +8,7 @@ export interface GetUsersInput {
 }
 
 export class UserService {
-
     static async getUsers(input: GetUsersInput) {
-
         const [data, countResult] = await Promise.all([
             db.query.users.findMany({
                 orderBy: (users, { asc }) => asc(users.createdAt),

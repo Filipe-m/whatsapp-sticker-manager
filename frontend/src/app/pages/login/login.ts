@@ -20,7 +20,12 @@ export class LoginComponent {
   errorMsg = '';
   showPassword = false;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router, private cdr: ChangeDetectorRef) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.form = this.fb.group({
       user: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -46,28 +51,28 @@ export class LoginComponent {
           this.loading = false;
           this.errorMsg = 'Usuário ou senha inválidos';
           this.cdr.detectChanges();
-          return
+          return;
         }
 
         this.auth.getSession().subscribe((sessionOk) => {
           this.loading = false;
           if (!sessionOk) this.errorMsg = 'Sessão não validou (401).';
           this.cdr.detectChanges();
-          return
+          return;
         });
       },
       (err) => {
         this.loading = false;
         this.errorMsg = err?.error?.message || 'Usuário ou senha inválidos';
         this.cdr.detectChanges();
-        return
-      }
+        return;
+      },
     );
   }
 
   criarConta() {
-  this.router.navigateByUrl('/criar-conta');
-}
+    this.router.navigateByUrl('/criar-conta');
+  }
 
   togglePassword() {
     this.showPassword = !this.showPassword;

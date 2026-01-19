@@ -7,10 +7,10 @@ import { logger } from '@lib/logger'
 import { authMiddleware } from '@middlewares/auth'
 import { pack } from '@modules/packs/pack.controller'
 import { sticker } from '@modules/stickers/sticker.controller'
+import { user } from '@modules/users/user.controller'
 import { openApiConfig } from '@utils/openApi'
 import { Elysia } from 'elysia'
 import { NotFoundException } from './exceptions/notFound'
-import { user } from '@modules/users/user.controller'
 
 new Elysia({
     allowUnsafeValidationDetails: true,

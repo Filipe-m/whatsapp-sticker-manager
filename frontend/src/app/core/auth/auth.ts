@@ -4,8 +4,8 @@ import { BehaviorSubject, catchError, map, of, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export type SessionResponse = {
-  user: any;       // ajuste se você tiver tipos
-  session: any;    // ajuste se você tiver tipos
+  user: any;
+  session: any;
 };
 
 export type SignUpEmailBody = {
@@ -23,7 +23,9 @@ export class AuthService {
   private readonly session$ = new BehaviorSubject<SessionResponse | null>(null);
 
   readonly currentSession$ = this.session$.asObservable();
-  get current() { return this.session$.value; }
+  get current() {
+    return this.session$.value;
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -35,7 +37,7 @@ export class AuthService {
         // se não tiver sessão, o middleware faz status(401)
         this.session$.next(null);
         return of(false);
-      })
+      }),
     );
   }
 
@@ -47,7 +49,7 @@ export class AuthService {
       // após login, buscamos a sessão (cookie já veio no Set-Cookie)
       tap(() => {}),
       map(() => true),
-      catchError(() => of(false))
+      catchError(() => of(false)),
     );
   }
 
@@ -56,22 +58,22 @@ export class AuthService {
 
     return this.http.post(`${this.base}/auth/sign-up/email`, body).pipe(
       map(() => true),
-      catchError(() => of(false))
+      catchError(() => of(false)),
     );
   }
 
-signUpEmailFull(body: SignUpEmailBody) {
-  return this.http.post(`${this.base}/auth/sign-up/email`, body).pipe(
-    map(() => true),
-    catchError((err) => throwError(() => err))
-  );
-}
+  signUpEmailFull(body: SignUpEmailBody) {
+    return this.http.post(`${this.base}/auth/sign-up/email`, body).pipe(
+      map(() => true),
+      catchError((err) => throwError(() => err)),
+    );
+  }
 
   signOut() {
     return this.http.post(`${this.base}/auth/sign-out`, {}).pipe(
       tap(() => this.session$.next(null)),
       map(() => true),
-      catchError(() => of(false))
+      catchError(() => of(false)),
     );
   }
 }

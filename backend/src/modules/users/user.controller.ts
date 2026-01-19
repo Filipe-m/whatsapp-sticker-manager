@@ -1,17 +1,11 @@
-import { BadRequestException } from '@/exceptions/badRequest'
 import { ForbiddenException } from '@/exceptions/forbidden'
 import { NotFoundException } from '@/exceptions/notFound'
-import { getObjectStorage } from '@lib/storage/storage'
 import { authMiddleware } from '@middlewares/auth'
-import { PackService } from '@modules/packs/pack.service'
-import HttpStatusCode from '@utils/httpStatusCode'
-import { emptySchema } from '@utils/schema'
-import { Elysia, status, t } from 'elysia'
-import { UserService } from './user.service'
-import {
-    getUsersQuerySchema,
-} from './user.schema'
 import { getUsersResponseSchema } from '@modules/users/user.schema'
+import HttpStatusCode from '@utils/httpStatusCode'
+import { Elysia, status } from 'elysia'
+import { getUsersQuerySchema } from './user.schema'
+import { UserService } from './user.service'
 
 export const user = new Elysia({
     prefix: '/user',
@@ -40,8 +34,7 @@ export const user = new Elysia({
             auth: true,
             detail: {
                 summary: 'List users with pagination',
-                description:
-                    'Returns users with pagination',
+                description: 'Returns users with pagination',
             },
             query: getUsersQuerySchema,
             response: {

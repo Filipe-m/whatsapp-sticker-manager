@@ -1,5 +1,5 @@
-import { t } from 'elysia'
 import { paginationMetaSchema } from '@modules/packs/pack.schema'
+import { t } from 'elysia'
 
 export const userSchema = t.Object({
     id: t.String({ format: 'uuid', title: 'User ID' }),
@@ -8,7 +8,10 @@ export const userSchema = t.Object({
     emailVerified: t.Boolean({ title: 'Email verified status' }),
     image: t.Nullable(t.String({ format: 'uri', title: 'User image URL' })),
     createdAt: t.String({ format: 'date-time', title: 'Creation timestamp' }),
-    updatedAt: t.String({ format: 'date-time', title: 'Last update timestamp' }),
+    updatedAt: t.String({
+        format: 'date-time',
+        title: 'Last update timestamp',
+    }),
 })
 
 export const getUsersQuerySchema = t.Object({
