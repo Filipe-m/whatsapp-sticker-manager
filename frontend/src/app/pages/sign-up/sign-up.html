@@ -1,0 +1,84 @@
+<div class="page">
+  <div class="card">
+    <div class="header">
+      <div class="title">Criar Conta</div>
+      <div class="subtitle">Preencha os dados abaixo</div>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="criarConta()">
+      <!-- Nome -->
+      <label class="label" for="name">Nome</label>
+      <input
+        id="name"
+        class="input"
+        type="text"
+        formControlName="name"
+        autocomplete="name"
+        placeholder="Seu nome"
+      />
+      <div class="hint" *ngIf="form.controls['name'].touched && form.controls['name'].invalid">
+        Informe um nome válido.
+      </div>
+
+      <!-- Email -->
+      <label class="label" for="email">E-mail</label>
+      <input
+        id="email"
+        class="input"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        placeholder="seuemail@exemplo.com"
+      />
+      <div class="hint" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
+        Informe um e-mail válido.
+      </div>
+
+      <!-- Senha -->
+      <label class="label" for="password">Senha</label>
+      <div class="password-row">
+        <input
+          id="password"
+          class="input"
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="new-password"
+          placeholder="Crie uma senha"
+        />
+        <button type="button" class="ghost" (click)="togglePassword()">
+          {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      <div class="hint" *ngIf="form.controls['password'].touched && form.controls['password'].invalid">
+        A senha deve ter pelo menos 8 caracteres.
+      </div>
+
+      <!-- Confirmar Senha -->
+      <label class="label" for="confirmPassword">Confirmar senha</label>
+      <input
+        id="confirmPassword"
+        class="input"
+        [type]="showPassword ? 'text' : 'password'"
+        formControlName="confirmPassword"
+        autocomplete="new-password"
+        placeholder="Repita a senha"
+      />
+      <div class="hint" *ngIf="form.controls['confirmPassword'].touched && form.controls['confirmPassword'].invalid">
+        Confirme sua senha.
+      </div>
+      <div class="hint" *ngIf="form.touched && form.errors?.['passwordMismatch']">
+        As senhas não coincidem.
+      </div>
+
+      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+      <button class="btn primary" type="submit" [disabled]="loading">
+        {{ loading ? 'Criando...' : 'Criar Conta' }}
+      </button>
+
+      <button class="btn secondary" type="button" (click)="voltar()" [disabled]="loading">
+        Voltar para o login
+      </button>
+    </form>
+  </div>
+</div>
