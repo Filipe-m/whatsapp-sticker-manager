@@ -4,8 +4,8 @@ import { BehaviorSubject, catchError, map, of, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export type SessionResponse = {
-  user: any; // ajuste se você tiver tipos
-  session: any; // ajuste se você tiver tipos
+  user: any;
+  session: any;
 };
 
 export type SignUpEmailBody = {

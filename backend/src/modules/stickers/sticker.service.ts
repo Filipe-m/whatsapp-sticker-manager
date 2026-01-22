@@ -96,7 +96,9 @@ export class StickerService {
             where: eq(packs.id, input.packId),
         })
         if (!pack) {
-            throw new NotFoundException(`Pack with ID ${input.packId} not found`)
+            throw new NotFoundException(
+                `Pack with ID ${input.packId} not found`
+            )
         }
 
         const mimeType = input.file.type || 'application/octet-stream'
@@ -111,7 +113,7 @@ export class StickerService {
             : nameFromFile(input.file.name)
 
         const bytes = new Uint8Array(await input.file.arrayBuffer())
-        
+
         const storage = getObjectStorage()
 
         await storage.putObject({
@@ -158,10 +160,15 @@ export class StickerService {
         }
     }
 
-    static async deleteSticker(userId: string, stickerId: string): Promise<void> {
+    static async deleteSticker(
+        userId: string,
+        stickerId: string
+    ): Promise<void> {
         const sticker = await this.getStickerById(stickerId)
         if (!sticker) {
-            throw new NotFoundException(`Sticker with ID ${stickerId} not found`)
+            throw new NotFoundException(
+                `Sticker with ID ${stickerId} not found`
+            )
         }
 
         await PackService.assertUserHasPermission(userId, sticker.packId, [
@@ -173,11 +180,18 @@ export class StickerService {
 
         const [deleted] = await db
             .delete(stickers)
-            .where(and(eq(stickers.id, stickerId), eq(stickers.packId, sticker.packId)))
+            .where(
+                and(
+                    eq(stickers.id, stickerId),
+                    eq(stickers.packId, sticker.packId)
+                )
+            )
             .returning()
 
         if (!deleted) {
-            throw new NotFoundException(`Sticker with ID ${stickerId} not found`)
+            throw new NotFoundException(
+                `Sticker with ID ${stickerId} not found`
+            )
         }
     }
 }
