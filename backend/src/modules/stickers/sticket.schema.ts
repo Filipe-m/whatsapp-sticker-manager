@@ -90,7 +90,7 @@ export const createStickerBodySchema = t.Object({
         })
     ),
     file: t.File({
-        format: 'image/*',
+        format: 'image/*,video/*',
         description: 'Sticker file (image or video)',
     }),
 })
