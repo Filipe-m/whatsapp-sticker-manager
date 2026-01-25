@@ -7,15 +7,6 @@ let minio: S3Client
 export class MinioStorageProvider implements ObjectStorageProvider {
     private client: S3Client
 
-    private static normalizeEndpoint(): string {
-        const raw = Enviroments.MINIO_END_POINT.trim()
-
-        if (/^https?:\/\//i.test(raw)) return raw
-        if (/^[^/]+:\d+$/.test(raw)) return `http://${raw}`
-
-        return `http://${raw}:${Enviroments.MINIO_PORT}`
-    }
-
     constructor() {
         try {
             if (!minio) {
@@ -23,8 +14,7 @@ export class MinioStorageProvider implements ObjectStorageProvider {
                     accessKeyId: Enviroments.MINIO_USER,
                     secretAccessKey: Enviroments.MINIO_PASSWORD,
                     bucket: Enviroments.BUCKET_NAME,
-
-                    endpoint: MinioStorageProvider.normalizeEndpoint(),
+                    endpoint: Enviroments.MINIO_END_POINT,
                 })
             }
             this.client = minio
