@@ -1,0 +1,73 @@
+<div class="page">
+  <div class="card">
+    <div class="topbar">
+      <div>
+        <div class="title">{{ pack?.name || 'Pack' }}</div>
+        <div class="subtitle">Gerencie os stickers deste pack</div>
+      </div>
+
+      <button class="btn secondary" type="button" (click)="voltar()" [disabled]="loading">
+        Voltar
+      </button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Adicionar sticker</div>
+
+      <form class="create" [formGroup]="addForm" (ngSubmit)="adicionarSticker()">
+        <input class="input" placeholder="Nome do sticker" formControlName="name" />
+
+        <label class="filebox">
+          <input type="file" accept="image/png,image/webp" (change)="onFileChange($event)" />
+          <span class="filetext">
+            {{ selectedFile?.name || 'Selecionar arquivo (.png ou .webp)' }}
+          </span>
+        </label>
+
+        <button class="btn primary" type="submit" [disabled]="loading">
+          {{ loading ? 'Adicionando...' : 'Adicionar' }}
+        </button>
+      </form>
+
+      <div
+        class="hint"
+        *ngIf="addForm.controls['name'].touched && addForm.controls['name'].invalid"
+      >
+        Informe um nome válido (1 a 100).
+      </div>
+
+      <div class="hint" *ngIf="!selectedFile">Selecione um arquivo .png ou .webp.</div>
+    </div>
+
+    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <div class="section">
+      <div class="section-title">Stickers</div>
+
+      <div class="loading" *ngIf="loading">Carregando...</div>
+
+      <div class="empty" *ngIf="!loading && stickers.length === 0">Nenhum sticker ainda.</div>
+
+      <div class="grid" *ngIf="stickers.length > 0">
+        <div class="tile" *ngFor="let s of stickers">
+          <div class="thumb">
+            <img [src]="stickerService.fileUrl(s.id)" [alt]="s.name || 'sticker'" />
+          </div>
+
+          <div class="tile-bottom">
+            <div class="name" title="{{ s.name }}">{{ s.name || 'Sticker' }}</div>
+
+            <button
+              class="btn danger small"
+              type="button"
+              (click)="deletarSticker(s)"
+              [disabled]="loading"
+            >
+              Deletar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

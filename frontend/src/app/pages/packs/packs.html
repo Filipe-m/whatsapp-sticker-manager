@@ -88,21 +88,27 @@
       <div class="empty" *ngIf="!loading && packs.length === 0">Nenhum pack criado ainda.</div>
 
       <div class="list" *ngIf="packs.length > 0">
-        <div class="row" *ngFor="let p of packs">
+        <div class="row clickable" *ngFor="let p of packs" (click)="abrirPack(p.id)">
           <div class="row-left">
             <div class="pack-name">
               {{ p.name }}
-              <span class="badge" [class.public]="p.public">{{
-                p.public ? 'Público' : 'Privado'
-              }}</span>
+              <span class="badge" [class.public]="p.public">
+                {{ p.public ? 'Público' : 'Privado' }}
+              </span>
             </div>
+
             <div class="pack-meta">
               Criado: {{ p.createdAt | date: 'short' }} • Atualizado:
               {{ p.updatedAt | date: 'short' }}
             </div>
           </div>
 
-          <button class="btn danger" type="button" (click)="deletarPack(p)" [disabled]="loading">
+          <button
+            class="btn danger"
+            type="button"
+            (click)="$event.stopPropagation(); deletarPack(p)"
+            [disabled]="loading"
+          >
             Deletar
           </button>
         </div>

@@ -12,10 +12,7 @@ import { CredentialsInterceptor } from './core/http/credentials-interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(
-      withFetch(),
-      withInterceptorsFromDi(),
-    ),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: CredentialsInterceptor, multi: true },
   ],
 };

@@ -133,4 +133,9 @@ export class PacksComponent {
       this.cdr.detectChanges();
     });
   }
+
+  abrirPack(id: string) {
+    this.router.navigateByUrl(`/packs/${id}`);
+    this.cdr.detectChanges();
+  }
 }

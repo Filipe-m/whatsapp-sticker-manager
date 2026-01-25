@@ -57,4 +57,10 @@ export class PackService {
       .delete(`${this.base}/pack/${encodeURIComponent(id)}`)
       .pipe(catchError((err) => throwError(() => err)));
   }
+
+  getById(id: string) {
+    return this.http
+      .get<Pack>(`${this.base}/pack/${encodeURIComponent(id)}`)
+      .pipe(catchError((err) => throwError(() => err)));
+  }
 }
