@@ -3,12 +3,20 @@
     <div class="topbar">
       <div>
         <div class="title">{{ pack?.name || 'Pack' }}</div>
-        <div class="subtitle">Gerencie os stickers deste pack</div>
+        <div class="subtitle">
+          <span *ngIf="pack?.ownerUser">De {{ pack?.ownerUser?.name }}</span>
+          <span *ngIf="!pack?.ownerUser">Gerencie os stickers deste pack</span>
+        </div>
       </div>
 
-      <button class="btn secondary" type="button" (click)="voltar()" [disabled]="loading">
-        Voltar
-      </button>
+      <div class="topbar-buttons">
+        <button class="btn secondary" type="button" (click)="openShareModal()" [disabled]="loading" *ngIf="isOwner()">
+          Compartilhar
+        </button>
+        <button class="btn secondary" type="button" (click)="voltar()" [disabled]="loading">
+          Voltar
+        </button>
+      </div>
     </div>
 
     <div class="section">
@@ -44,6 +52,17 @@
     <div class="section">
       <div class="section-title">Stickers</div>
 
+      <div class="search-wrapper">
+        <input
+          class="input"
+          type="text"
+          placeholder="Buscar stickers por nome..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange($event)"
+          (keyup)="onSearchChange(searchQuery)"
+        />
+      </div>
+
       <div class="loading" *ngIf="loading">Carregando...</div>
 
       <div class="empty" *ngIf="!loading && stickers.length === 0">Nenhum sticker ainda.</div>
@@ -67,6 +86,107 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showShareModal" (click)="closeShareModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">Compartilhar Pack</div>
+        <button class="modal-close" type="button" (click)="closeShareModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-title">Buscar usuários</div>
+
+          <input
+            class="input"
+            type="text"
+            placeholder="Buscar por nome ou email..."
+            [(ngModel)]="shareSearchQuery"
+            (ngModelChange)="onShareSearchChange($event)"
+            (keyup)="onShareSearchChange(shareSearchQuery)"
+          />
+
+          <div class="user-list" *ngIf="shareUsers.length > 0">
+            <div
+              class="user-item"
+              *ngFor="let u of shareUsers"
+              [class.selected]="selectedUserIds.has(u.id)"
+              (click)="toggleUserSelection(u.id)"
+            >
+              <div class="user-info">
+                <div class="user-name">{{ u.name }}</div>
+                <div class="user-email">{{ u.email }}</div>
+              </div>
+
+              <div class="user-permissions" *ngIf="selectedUserIds.has(u.id)">
+                <label class="permission-toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="sharePermissions[u.id]?.canEdit"
+                    (click)="$event.stopPropagation()"
+                    (change)="togglePermission(u.id, 'canEdit')"
+                  />
+                  <span>Editar</span>
+                </label>
+                <label class="permission-toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="sharePermissions[u.id]?.canDelete"
+                    (click)="$event.stopPropagation()"
+                    (change)="togglePermission(u.id, 'canDelete')"
+                  />
+                  <span>Deletar</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty" *ngIf="!shareLoading && shareUsers.length === 0">
+            Nenhum usuário encontrado.
+          </div>
+
+          <button
+            class="btn primary"
+            type="button"
+            (click)="shareWithSelected()"
+            [disabled]="shareLoading || selectedUserIds.size === 0"
+          >
+            {{ shareLoading ? 'Compartilhando...' : 'Compartilhar com selecionados' }}
+          </button>
+        </div>
+
+        <div class="modal-section" *ngIf="sharedUsers.length > 0">
+          <div class="modal-section-title">Usuários com acesso</div>
+
+          <div class="shared-list">
+            <div class="shared-item" *ngFor="let s of sharedUsers">
+              <div class="user-info">
+                <div class="user-name">{{ s.user?.name || 'Usuário' }}</div>
+                <div class="user-email">{{ s.user?.email || '' }}</div>
+              </div>
+
+              <div class="shared-permissions">
+                <span class="badge" *ngIf="s.canEdit">Editar</span>
+                <span class="badge" *ngIf="s.canDelete">Deletar</span>
+              </div>
+
+              <button
+                class="btn danger small"
+                type="button"
+                (click)="removeShare(s.userId)"
+                [disabled]="shareLoading"
+              >
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="error" *ngIf="shareError">{{ shareError }}</div>
       </div>
     </div>
   </div>

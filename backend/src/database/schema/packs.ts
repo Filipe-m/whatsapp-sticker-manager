@@ -19,8 +19,12 @@ export const packs = pgTable('packs', {
         .notNull(),
 })
 
-export const packsRelations = relations(packs, ({ many }) => ({
+export const packsRelations = relations(packs, ({ many, one }) => ({
     sharedPacks: many(sharedPacks),
+    ownerUser: one(users, {
+        fields: [packs.owner],
+        references: [users.id],
+    }),
 }))
 
 export type Packs = typeof packs.$inferSelect

@@ -10,7 +10,7 @@ import {
 import { logger } from '@lib/logger'
 import { getObjectStorage } from '@lib/storage/storage'
 import { PackService } from '@modules/packs/pack.service'
-import { and, count, eq } from 'drizzle-orm'
+import { and, count, eq, ilike } from 'drizzle-orm'
 
 export interface CreateStickerInput {
     userId: string
@@ -24,6 +24,7 @@ export interface GetStickersInput {
     packId: string
     pageNumber: number
     pageSize: number
+    search?: string
 }
 
 function normalizeStickerName(input: string): string {
@@ -62,7 +63,16 @@ export class StickerService {
             'view',
         ])
 
-        const where = eq(stickers.packId, input.packId)
+        const whereConditions = [eq(stickers.packId, input.packId)]
+
+        if (input.search) {
+            whereConditions.push(ilike(stickers.name, `%${input.search}%`))
+        }
+
+        const where =
+            whereConditions.length > 1
+                ? and(...whereConditions)
+                : whereConditions[0]
 
         const [data, countResult] = await Promise.all([
             db.query.stickers.findMany({

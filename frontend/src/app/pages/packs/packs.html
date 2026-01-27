@@ -48,6 +48,52 @@
     <div class="section">
       <div class="section-title">Packs existentes</div>
 
+      <div class="search-wrapper">
+        <input
+          class="input"
+          type="text"
+          placeholder="Buscar packs por nome..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange($event)"
+          (keyup)="onSearchChange(searchQuery)"
+        />
+      </div>
+
+      <div class="filters">
+        <button
+          class="chip"
+          type="button"
+          (click)="setFilter('all')"
+          [disabled]="loading || activeFilter === 'all'"
+        >
+          Todos
+        </button>
+        <button
+          class="chip"
+          type="button"
+          (click)="setFilter('owned')"
+          [disabled]="loading || activeFilter === 'owned'"
+        >
+          Meus Pacotes
+        </button>
+        <button
+          class="chip"
+          type="button"
+          (click)="setFilter('public')"
+          [disabled]="loading || activeFilter === 'public'"
+        >
+          Públicos
+        </button>
+        <button
+          class="chip"
+          type="button"
+          (click)="setFilter('shared')"
+          [disabled]="loading || activeFilter === 'shared'"
+        >
+          Compartilhados Comigo
+        </button>
+      </div>
+
       <div class="toolbar">
         <div class="meta">
           Página <b>{{ meta.page }}</b> de <b>{{ meta.totalPages }}</b> — Total:
@@ -98,6 +144,7 @@
             </div>
 
             <div class="pack-meta">
+              <span *ngIf="p.ownerUser">De {{ p.ownerUser.name }} • </span>
               Criado: {{ p.createdAt | date: 'short' }} • Atualizado:
               {{ p.updatedAt | date: 'short' }}
             </div>

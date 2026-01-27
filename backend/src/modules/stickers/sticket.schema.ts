@@ -67,6 +67,16 @@ export const getStickersQuerySchema = t.Object({
         minimum: 1,
         maximum: 100,
     }),
+    search: t.Optional(
+        t.String({
+            title: 'Search stickers by name',
+            description:
+                'Search for stickers by name using partial matching (case-insensitive).',
+            minLength: 1,
+            maxLength: 100,
+            examples: ['cool', 'funny'],
+        })
+    ),
 })
 
 export const getStickersResponseSchema = t.Object({

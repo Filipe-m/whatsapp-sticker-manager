@@ -26,6 +26,16 @@ export const getUsersQuerySchema = t.Object({
         minimum: 1,
         maximum: 100,
     }),
+    search: t.Optional(
+        t.String({
+            title: 'Search users by name or email',
+            description:
+                'Search for users by name or email using partial matching (case-insensitive).',
+            minLength: 1,
+            maxLength: 100,
+            examples: ['john', 'example@'],
+        })
+    ),
 })
 
 export const getUsersResponseSchema = t.Object({

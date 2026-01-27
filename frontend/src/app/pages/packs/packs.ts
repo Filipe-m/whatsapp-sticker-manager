@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
 import { PackService, Pack, PaginationMeta } from '../../core/pack/pack';
@@ -9,7 +9,7 @@ import { AuthService } from '../../core/auth/auth';
 @Component({
   selector: 'app-packs',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, DatePipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, DatePipe, FormsModule],
   templateUrl: './packs.html',
   styleUrls: ['./packs.css'],
 })
@@ -19,6 +19,9 @@ export class PacksComponent {
 
   packs: Pack[] = [];
   meta: PaginationMeta = { page: 1, pageSize: 10, total: 0, totalPages: 0 };
+  activeFilter: 'all' | 'owned' | 'public' | 'shared' = 'all';
+  searchQuery = '';
+  searchTimeout: any = null;
 
   createForm!: FormGroup;
 
@@ -44,7 +47,8 @@ export class PacksComponent {
     this.errorMsg = '';
     this.cdr.detectChanges();
 
-    this.packService.list(page, pageSize).subscribe({
+    const filters = this.getFiltersForActive();
+    this.packService.list(page, pageSize, filters, this.searchQuery).subscribe({
       next: (res) => {
         this.packs = res?.data ?? [];
         this.meta = res?.meta ?? { page: 1, pageSize, total: 0, totalPages: 0 };
@@ -125,6 +129,35 @@ export class PacksComponent {
 
   setPageSize(size: number) {
     this.load(1, size);
+  }
+
+  setFilter(filter: 'all' | 'owned' | 'public' | 'shared') {
+    this.activeFilter = filter;
+    this.load(1, this.meta.pageSize);
+  }
+
+  getFiltersForActive(): { owned?: boolean; public?: boolean; shared?: boolean } {
+    switch (this.activeFilter) {
+      case 'owned':
+        return { owned: true };
+      case 'public':
+        return { public: true };
+      case 'shared':
+        return { shared: true };
+      case 'all':
+      default:
+        return {};
+    }
+  }
+
+  onSearchChange(query: string) {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      this.load(1, this.meta.pageSize);
+    }, 500);
   }
 
   sair() {

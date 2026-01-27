@@ -354,6 +354,36 @@
   }
 }
 
+.search-wrapper {
+  margin: 12px 0;
+}
+
+@media (max-width: 480px) {
+  .search-wrapper {
+    margin: 10px 0;
+  }
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters {
+    gap: 6px;
+  }
+}
+
 .toolbar {
   display: flex;
   align-items: center;

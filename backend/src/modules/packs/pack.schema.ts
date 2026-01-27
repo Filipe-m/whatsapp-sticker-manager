@@ -2,7 +2,13 @@ import { packs } from '@database/schema/packs'
 import { createSelectSchema } from 'drizzle-typebox'
 import { t } from 'elysia'
 
-export const packSchema = createSelectSchema(packs, {
+const ownerUserSchema = t.Object({
+    id: t.String({ format: 'uuid', description: 'User ID' }),
+    name: t.String({ description: 'User name' }),
+    email: t.String({ format: 'email', description: 'User email' }),
+})
+
+export const packSchema = t.Object({
     id: t.String({
         format: 'uuid',
         description: 'Unique identifier for the pack',
@@ -33,6 +39,8 @@ export const packSchema = createSelectSchema(packs, {
             'Timestamp when the pack was last updated (ISO 8601 format)',
         examples: ['2024-01-02T12:30:00.000Z'],
     }),
+    ownerUser: t.Optional(ownerUserSchema),
+    sharedPacks: t.Optional(t.Array(t.Any())),
 })
 
 const packNameSchema = t.String({
@@ -91,6 +99,40 @@ export const getPacksQuerySchema = t.Object({
         maximum: 100,
         examples: [10, 25, 50, 100],
     }),
+    owned: t.Optional(
+        t.Boolean({
+            title: 'Filter owned packs',
+            description:
+                'If true, returns only packs owned by the authenticated user. Can be combined with other filters.',
+            examples: [true, false],
+        })
+    ),
+    public: t.Optional(
+        t.Boolean({
+            title: 'Filter public packs',
+            description:
+                'If true, returns only public packs. Can be combined with other filters.',
+            examples: [true, false],
+        })
+    ),
+    shared: t.Optional(
+        t.Boolean({
+            title: 'Filter shared packs',
+            description:
+                'If true, returns only packs shared with the authenticated user. Can be combined with other filters.',
+            examples: [true, false],
+        })
+    ),
+    search: t.Optional(
+        t.String({
+            title: 'Search packs by name',
+            description:
+                'Search for packs by name using partial matching (case-insensitive).',
+            minLength: 1,
+            maxLength: 100,
+            examples: ['funny', 'work', 'memes'],
+        })
+    ),
 })
 
 export const createPackBodySchema = t.Object(
@@ -139,6 +181,19 @@ export const packIdParamSchema = t.Object({
         description: 'Unique identifier of the pack',
         examples: [1, 42, 999],
         minimum: 1,
+    }),
+})
+
+export const unsharePackParamSchema = t.Object({
+    id: t.String({
+        title: 'Pack ID',
+        format: 'uuid',
+        description: 'Unique identifier of the pack',
+    }),
+    userId: t.String({
+        title: 'User ID',
+        format: 'uuid',
+        description: 'ID of user to remove share from',
     }),
 })
 

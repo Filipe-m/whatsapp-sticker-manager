@@ -29,6 +29,7 @@ export const sticker = new Elysia({
                 packId: query.packId,
                 pageNumber: query.pageNumber,
                 pageSize: query.pageSize,
+                search: query.search,
             })
 
             return status(HttpStatusCode.OK_200, result)

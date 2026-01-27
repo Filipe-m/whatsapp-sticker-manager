@@ -14,10 +14,12 @@ export const user = new Elysia({
     .use(authMiddleware)
     .get(
         '',
-        async ({ query }) => {
+        async ({ query, user }) => {
             const result = await UserService.getUsers({
                 pageNumber: query.pageNumber,
                 pageSize: query.pageSize,
+                search: query.search,
+                excludeUserId: user.id,
             })
 
             return status(HttpStatusCode.OK_200, {

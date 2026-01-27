@@ -4,13 +4,34 @@ import { catchError, throwError } from 'rxjs';
 
 const API_BASE = 'http://localhost:8080';
 
+export type SharedPack = {
+  id: string;
+  packId: string;
+  userId: string;
+  canEdit: boolean;
+  canDelete: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
 export type Pack = {
-  id: string; // uuid
+  id: string;
   name: string;
   owner: string;
   public: boolean;
-  createdAt: string; // ISO
-  updatedAt: string; // ISO
+  createdAt: string;
+  updatedAt: string;
+  sharedPacks?: SharedPack[];
+  ownerUser?: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };
 
 export type PaginationMeta = {
@@ -36,10 +57,28 @@ export class PackService {
 
   constructor(private http: HttpClient) {}
 
-  list(pageNumber = 1, pageSize = 10) {
-    const params = new HttpParams()
+  list(
+    pageNumber = 1,
+    pageSize = 10,
+    filters: { owned?: boolean; public?: boolean; shared?: boolean } = {},
+    search = ''
+  ) {
+    let params = new HttpParams()
       .set('pageNumber', String(pageNumber))
       .set('pageSize', String(pageSize));
+
+    if (filters.owned !== undefined) {
+      params = params.set('owned', String(filters.owned));
+    }
+    if (filters.public !== undefined) {
+      params = params.set('public', String(filters.public));
+    }
+    if (filters.shared !== undefined) {
+      params = params.set('shared', String(filters.shared));
+    }
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
+    }
 
     return this.http
       .get<GetPacksResponse>(`${this.base}/pack`, { params })
@@ -61,6 +100,22 @@ export class PackService {
   getById(id: string) {
     return this.http
       .get<Pack>(`${this.base}/pack/${encodeURIComponent(id)}`)
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  share(packId: string, userId: string, canEdit: boolean, canDelete: boolean) {
+    return this.http
+      .post(`${this.base}/pack/${encodeURIComponent(packId)}/share`, {
+        userId,
+        canEdit,
+        canDelete,
+      })
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  unshare(packId: string, userId: string) {
+    return this.http
+      .delete(`${this.base}/pack/${encodeURIComponent(packId)}/share/${encodeURIComponent(userId)}`)
       .pipe(catchError((err) => throwError(() => err)));
   }
 }

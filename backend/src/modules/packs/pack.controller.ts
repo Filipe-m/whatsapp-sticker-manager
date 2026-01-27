@@ -11,6 +11,7 @@ import {
     packIdParamSchema,
     packSchema,
     sharePackBodySchema,
+    unsharePackParamSchema,
     updatePackBodySchema,
 } from './pack.schema'
 import { PackService } from './pack.service'
@@ -26,7 +27,13 @@ export const pack = new Elysia({
             const packs = await PackService.getPacks(
                 user.id,
                 query.pageNumber,
-                query.pageSize
+                query.pageSize,
+                {
+                    owned: query.owned,
+                    public: query.public,
+                    shared: query.shared,
+                    search: query.search,
+                }
             )
             return packs
         },
@@ -35,7 +42,7 @@ export const pack = new Elysia({
             detail: {
                 summary: 'Get packs',
                 description:
-                    'Get the packs available to the user with pagination',
+                    'Get the packs available to the user with pagination. Use owned, public, and shared flags to filter results. If no flags are provided, returns all packs (owned, shared, and public).',
             },
             query: getPacksQuerySchema,
             response: {
@@ -171,6 +178,30 @@ export const pack = new Elysia({
             body: sharePackBodySchema,
             response: {
                 201: t.Any(),
+                403: ForbiddenException.schema,
+                404: NotFoundException.schema,
+            },
+        }
+    )
+    .delete(
+        ':id/share/:userId',
+        async ({ user, params }) => {
+            await PackService.assertUserHasPermission(user.id, params.id, [
+                'edit',
+            ])
+            await PackService.unsharePack(params.id, params.userId)
+            return status(HttpStatusCode.NO_CONTENT_204)
+        },
+        {
+            auth: true,
+            detail: {
+                summary: 'Remove pack sharing',
+                description:
+                    'Remove sharing permissions from a user for this pack',
+            },
+            params: unsharePackParamSchema,
+            response: {
+                204: emptySchema,
                 403: ForbiddenException.schema,
                 404: NotFoundException.schema,
             },

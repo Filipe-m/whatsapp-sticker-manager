@@ -3,12 +3,14 @@ import { NotFoundException } from '@/exceptions/notFound'
 import { db } from '@database/index'
 import { packs, type NewPack, type Packs } from '@database/schema/packs'
 import { sharedPacks, type NewSharedPack } from '@database/schema/sharedPacks'
-import { and, count, eq, inArray, or, type SQL } from 'drizzle-orm'
+import { and, count, eq, ilike, inArray, or, type SQL } from 'drizzle-orm'
 import type { GetPacksResponse } from './pack.schema'
 
 interface PackFilters {
-    userId?: string
-    isPublic?: boolean
+    owned?: boolean
+    public?: boolean
+    shared?: boolean
+    search?: string
 }
 
 type Permission = 'view' | 'edit' | 'delete'
@@ -19,7 +21,23 @@ export class PackService {
         packId: Packs['id'],
         permissions: Permission[]
     ): Promise<void> {
-        const sharedPackConditions: SQL[] = []
+        const pack = await db.query.packs.findFirst({
+            where: eq(packs.id, packId),
+        })
+
+        if (!pack) {
+            throw new NotFoundException(`Pack with id ${packId} not found`)
+        }
+
+        if (permissions.includes('view') && pack.public) {
+            return
+        }
+
+        if (pack.owner === userId) {
+            return
+        }
+
+        const sharedPackConditions: SQL[] = [eq(sharedPacks.userId, userId)]
 
         if (permissions.includes('delete')) {
             sharedPackConditions.push(eq(sharedPacks.canDelete, true))
@@ -28,29 +46,14 @@ export class PackService {
             sharedPackConditions.push(eq(sharedPacks.canEdit, true))
         }
 
-        const sharedPackWhere =
-            sharedPackConditions.length > 0
-                ? and(eq(sharedPacks.userId, userId), ...sharedPackConditions)
-                : eq(sharedPacks.userId, userId)
-
-        // User has permission if they own the pack OR have appropriate shared access
-        const pack = await db.query.packs.findFirst({
+        const sharedPack = await db.query.sharedPacks.findFirst({
             where: and(
-                eq(packs.id, packId),
-                or(
-                    eq(packs.owner, userId),
-                    inArray(
-                        packs.id,
-                        db
-                            .select({ packId: sharedPacks.packId })
-                            .from(sharedPacks)
-                            .where(sharedPackWhere)
-                    )
-                )
+                eq(sharedPacks.packId, packId),
+                ...sharedPackConditions
             ),
         })
 
-        if (!pack) {
+        if (!sharedPack) {
             throw new ForbiddenException(
                 `User ${userId} does not have permission to access pack ${packId}`
             )
@@ -60,6 +63,20 @@ export class PackService {
     static async getPackByID(id: string): Promise<Packs | null> {
         const pack = await db.query.packs.findFirst({
             where: eq(packs.id, id),
+            with: {
+                ownerUser: {
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                sharedPacks: {
+                    with: {
+                        user: true,
+                    },
+                },
+            },
         })
 
         return pack ?? null
@@ -76,24 +93,39 @@ export class PackService {
             .from(sharedPacks)
             .where(eq(sharedPacks.userId, userId))
 
-        const whereConditions: (SQL | undefined)[] = []
+        // Se nenhum filtro foi especificado, retorna tudo (owned + shared + public)
+        const noFiltersSpecified =
+            filters.owned === undefined &&
+            filters.public === undefined &&
+            filters.shared === undefined
 
-        if (filters.isPublic !== undefined) {
-            whereConditions.push(eq(packs.public, filters.isPublic))
+        const ownershipConditions: SQL[] = []
+
+        if (noFiltersSpecified || filters.owned) {
+            ownershipConditions.push(eq(packs.owner, userId))
         }
 
-        if (filters.isPublic === undefined) {
-            whereConditions.push(
-                or(
-                    eq(packs.owner, userId),
-                    inArray(packs.id, packsSharedWithUser)
-                )
-            )
+        if (noFiltersSpecified || filters.shared) {
+            ownershipConditions.push(inArray(packs.id, packsSharedWithUser))
+        }
+
+        if (noFiltersSpecified || filters.public) {
+            ownershipConditions.push(eq(packs.public, true))
+        }
+
+        const whereConditions: SQL[] = []
+
+        if (ownershipConditions.length > 0) {
+            whereConditions.push(or(...ownershipConditions)!)
+        }
+
+        if (filters.search) {
+            whereConditions.push(ilike(packs.name, `%${filters.search}%`))
         }
 
         const finalWhere =
             whereConditions.length > 0
-                ? and(...whereConditions.filter(Boolean))
+                ? and(...whereConditions)
                 : undefined
 
         const [data, countResult] = await Promise.all([
@@ -103,6 +135,13 @@ export class PackService {
                 limit: pageSize,
                 offset: (pageNumber - 1) * pageSize,
                 with: {
+                    ownerUser: {
+                        columns: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
                     sharedPacks: {
                         with: {
                             user: true,
@@ -205,5 +244,26 @@ export class PackService {
         }
 
         return sharedPack[0]
+    }
+
+    static async unsharePack(
+        packId: string,
+        userId: string
+    ): Promise<void> {
+        const [deleted] = await db
+            .delete(sharedPacks)
+            .where(
+                and(
+                    eq(sharedPacks.packId, packId),
+                    eq(sharedPacks.userId, userId)
+                )
+            )
+            .returning()
+
+        if (!deleted) {
+            throw new NotFoundException(
+                `Share not found for pack ${packId} and user ${userId}`
+            )
+        }
     }
 }

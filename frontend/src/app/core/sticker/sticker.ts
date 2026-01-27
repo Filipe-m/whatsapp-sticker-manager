@@ -21,8 +21,12 @@ export class StickerService {
 
   constructor(private http: HttpClient) {}
 
-  list(packId: string) {
-    const params = new HttpParams().set('packId', packId);
+  list(packId: string, search = '') {
+    let params = new HttpParams().set('packId', packId);
+
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
+    }
 
     return this.http.get<any>(`${this.base}/sticker`, { params }).pipe(
       map((res) => {
