@@ -47,10 +47,7 @@ export class PackService {
         }
 
         const sharedPack = await db.query.sharedPacks.findFirst({
-            where: and(
-                eq(sharedPacks.packId, packId),
-                ...sharedPackConditions
-            ),
+            where: and(eq(sharedPacks.packId, packId), ...sharedPackConditions),
         })
 
         if (!sharedPack) {
@@ -124,9 +121,7 @@ export class PackService {
         }
 
         const finalWhere =
-            whereConditions.length > 0
-                ? and(...whereConditions)
-                : undefined
+            whereConditions.length > 0 ? and(...whereConditions) : undefined
 
         const [data, countResult] = await Promise.all([
             db.query.packs.findMany({
@@ -246,10 +241,7 @@ export class PackService {
         return sharedPack[0]
     }
 
-    static async unsharePack(
-        packId: string,
-        userId: string
-    ): Promise<void> {
+    static async unsharePack(packId: string, userId: string): Promise<void> {
         const [deleted] = await db
             .delete(sharedPacks)
             .where(

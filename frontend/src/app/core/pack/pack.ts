@@ -61,7 +61,7 @@ export class PackService {
     pageNumber = 1,
     pageSize = 10,
     filters: { owned?: boolean; public?: boolean; shared?: boolean } = {},
-    search = ''
+    search = '',
   ) {
     let params = new HttpParams()
       .set('pageNumber', String(pageNumber))

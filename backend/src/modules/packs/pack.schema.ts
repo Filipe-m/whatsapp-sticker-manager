@@ -1,5 +1,3 @@
-import { packs } from '@database/schema/packs'
-import { createSelectSchema } from 'drizzle-typebox'
 import { t } from 'elysia'
 
 const ownerUserSchema = t.Object({

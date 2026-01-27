@@ -10,7 +10,13 @@
       </div>
 
       <div class="topbar-buttons">
-        <button class="btn secondary" type="button" (click)="openShareModal()" [disabled]="loading" *ngIf="isOwner()">
+        <button
+          class="btn secondary"
+          type="button"
+          (click)="openShareModal()"
+          [disabled]="loading"
+          *ngIf="isOwner()"
+        >
           Compartilhar
         </button>
         <button class="btn secondary" type="button" (click)="voltar()" [disabled]="loading">

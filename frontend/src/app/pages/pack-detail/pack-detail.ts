@@ -1,7 +1,13 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormsModule } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+  FormGroup,
+  FormsModule,
+} from '@angular/forms';
 
 import { PackService, Pack } from '../../core/pack/pack';
 import { StickerService, Sticker } from '../../core/sticker/sticker';
@@ -261,7 +267,7 @@ export class PackDetailComponent {
       return this.packService.share(this.packId, userId, perms.canEdit, perms.canDelete);
     });
 
-    Promise.all(shareRequests.map(req => req.toPromise()))
+    Promise.all(shareRequests.map((req) => req.toPromise()))
       .then(() => {
         this.shareLoading = false;
         this.selectedUserIds.clear();

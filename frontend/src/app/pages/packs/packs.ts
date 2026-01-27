@@ -1,6 +1,12 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormsModule } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+  FormGroup,
+  FormsModule,
+} from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
 import { PackService, Pack, PaginationMeta } from '../../core/pack/pack';
